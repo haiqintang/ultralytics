@@ -379,7 +379,15 @@ class DetectionModel(BaseModel):
             self.yaml["backbone"][0][2] = "nn.Identity"
 
         # Define model
-        self.yaml["channels"] = ch  # save channels
+        # Check if "channels" key exists in yaml
+        if "channels" not in self.yaml:
+            LOGGER.info(
+                f"'channels' key not found in model.yaml. "
+                f"Setting 'channels' to {ch} based on provided argument."
+            )
+
+        ch = self.yaml["channels"] = self.yaml.get("channels", ch)  # save channels
+        LOGGER.info(f"Channels: {ch}")
         if nc and nc != self.yaml["nc"]:
             LOGGER.info(f"Overriding model.yaml nc={self.yaml['nc']} with nc={nc}")
             self.yaml["nc"] = nc  # override YAML value
